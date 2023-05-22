@@ -1,0 +1,20 @@
+import { Request, Response } from 'express';
+import { AppDataSource } from '../../common/database/data-source';
+import { Artist } from './artist.model';
+
+class ArtistController {
+  async handleCreateArtistRequest(req: Request, res: Response) {
+    const { name } = req.body;
+    const requestingUser = req.user;
+
+    try {
+      const artist = await AppDataSource.getRepository(Artist).save({ name });
+      console.log(`User ${requestingUser.id} created artist ${artist.id}`);
+      return res.json({ ok: true, artist });
+    } catch (error) {
+      console.log(error, 'error creating artist');
+      return res.status(500).json({ ok: false, error });
+    }
+  }
+}
+export default new ArtistController();
